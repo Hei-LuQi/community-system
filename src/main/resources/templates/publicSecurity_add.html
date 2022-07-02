@@ -1,0 +1,102 @@
+<div class="layuimini-main">
+    <div class="layui-form layuimini-form">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" class="layui-input" lay-reqtext="编号不能为空" placeholder="请输入编号">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">档案编码</label>
+            <div class="layui-input-block">
+                <input type="text" name="code"  lay-verify="required" class="layui-input" lay-reqtext="档案编码不能为空" placeholder="请输入档案编码">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">所属分局</label>
+            <div class="layui-input-block">
+                <input type="text" name="dependentOffice" lay-verify="required" lay-reqtext="所属分局不能为空" placeholder="请输入所属分局" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">创建时间</label>
+            <div class="layui-input-block">
+                <input type="date" name="createDate" lay-verify="required" lay-reqtext="创建时间不能为空" placeholder="请输入创建时间" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">类型</label>
+            <div class="layui-input-block">
+                <input type="text" name="type" lay-verify="required" lay-reqtext="类型不能为空" placeholder="请输入类型" value="" class="layui-input">
+            </div>
+        </div>
+
+
+        <!--        <div class="layui-form-item">-->
+        <!--            <label class="layui-form-label required">联系电话</label>-->
+        <!--            <div class="layui-input-block">-->
+        <!--                <input type="radio" name="status" value="2" title="可借" checked="">-->
+        <!--                <input type="radio" name="status" value="1" title="不可借">-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script th:inline="none">
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            ajax({
+                method: 'POST',
+                url: '/insertPublicSecurity',
+                data:data.field,
+                success: function (response) {
+                    var json=JSON.parse(response);
+                    if(json.code==0){
+                        var index = layer.alert(json.msg, {
+                            title: '提交完毕'
+                        }, function () {
+                            // 关闭弹出层
+                            layer.close(index);
+                            layer.close(parentIndex);
+                            table.reload('publicSecurityList',{});
+                        });
+                    }else{
+                        // 	   配置一个透明的询问框
+                        layer.msg(json.msg,{
+                            time:20000,
+                            btn:['明白了']
+                        });
+                    }
+                }
+            });
+
+        });
+
+    });
+</script>

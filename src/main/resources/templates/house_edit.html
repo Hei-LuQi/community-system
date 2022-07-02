@@ -1,0 +1,108 @@
+<div class="layuimini-main">
+    <div class="layui-form layuimini-form" lay-filter="house_edit">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" readonly="readonly" style="background:#CCCCCC" lay-verify="required" class="layui-input" lay-reqtext="编号不能为空" placeholder="请输入编号">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">业主</label>
+            <div class="layui-input-block">
+                <input type="text" name="userName"  lay-verify="required" class="layui-input" lay-reqtext="业主不能为空" placeholder="请输入业主">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">业主电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone"  lay-verify="required" class="layui-input" lay-reqtext="业主电话不能为空" placeholder="请输入业主电话">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">创建时间</label>
+            <div class="layui-input-block">
+                <input type="date" name="createDate" lay-verify="required" lay-reqtext="成立时间不能为空" placeholder="请输入成立时间" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="address" lay-verify="required" lay-reqtext="地址不能为空" placeholder="请输入地址" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">业主证件号</label>
+            <div class="layui-input-block">
+                <input type="text" name="userNo" lay-verify="required" lay-reqtext="业主证件号不能为空" placeholder="请输入业主证件号" value="" class="layui-input">
+            </div>
+        </div>
+
+        <!--        <div class="layui-form-item">-->
+        <!--            <label class="layui-form-label required">联系电话</label>-->
+        <!--            <div class="layui-input-block">-->
+        <!--                <input type="radio" name="status" value="2" title="可借" checked="">-->
+        <!--                <input type="radio" name="status" value="1" title="不可借">-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script th:inline="none">
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            ajax({
+                method: 'POST',
+                url: '/updateHouse',
+                data:data.field,
+                success: function (response) {
+                    var json=JSON.parse(response);
+                    if(json.code==0){
+                        var index = layer.alert(json.msg, {
+                            title: '提交完毕'
+                        }, function () {
+                            // 关闭弹出层
+                            layer.close(index);
+                            layer.close(parentIndex);
+                            table.reload('houseList',{});
+                        });
+                    }else{
+                        // 	   配置一个透明的询问框
+                        layer.msg(json.msg,{
+                            time:20000,
+                            btn:['明白了']
+                        });
+                    }
+                }
+            });
+
+        });
+
+    });
+</script>

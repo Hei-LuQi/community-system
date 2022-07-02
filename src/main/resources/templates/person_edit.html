@@ -1,0 +1,122 @@
+<div class="layuimini-main">
+    <div class="layui-form layuimini-form"  lay-filter="person_edit">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" readonly="readonly" style="background:#CCCCCC" class="layui-input" lay-reqtext="编号不能为空" placeholder="请输入编号">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name"  lay-verify="required" class="layui-input" lay-reqtext="姓名不能为空" placeholder="请输入姓名">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">性别</label>
+            <div class="layui-input-block">
+                <input type="text" name="sex"  lay-verify="required" class="layui-input" lay-reqtext="性别不能为空" placeholder="请输入性别">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">身份证</label>
+            <div class="layui-input-block">
+                <input type="text" name="idCard"  lay-verify="required" class="layui-input" lay-reqtext="身份证不能为空" placeholder="请输入身份证">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">类型：迁入/迁出</label>
+            <div class="layui-input-block">
+                <input type="text" name="type"  lay-verify="required" class="layui-input" lay-reqtext="类型不能为空" placeholder="请输入类型：迁入/迁出">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">迁入/迁出时间</label>
+            <div class="layui-input-block">
+                <input type="date" name="createDate" lay-verify="required" lay-reqtext="迁入/迁出时间不能为空" placeholder="请输入迁入/迁出时间" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone" lay-verify="required" lay-reqtext="电话不能为空" placeholder="请输入电话" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">备注</label>
+            <div class="layui-input-block">
+                <input type="text" name="remark" lay-verify="required" lay-reqtext="备注不能为空" placeholder="请输入备注" value="" class="layui-input">
+            </div>
+        </div>
+
+        <!--        <div class="layui-form-item">-->
+        <!--            <label class="layui-form-label required">联系电话</label>-->
+        <!--            <div class="layui-input-block">-->
+        <!--                <input type="radio" name="status" value="2" title="可借" checked="">-->
+        <!--                <input type="radio" name="status" value="1" title="不可借">-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script th:inline="none">
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            ajax({
+                method: 'POST',
+                url: '/updatePerson',
+                data:data.field,
+                success: function (response) {
+                    var json=JSON.parse(response);
+                    if(json.code==0){
+                        var index = layer.alert(json.msg, {
+                            title: '提交完毕'
+                        }, function () {
+                            // 关闭弹出层
+                            layer.close(index);
+                            layer.close(parentIndex);
+                            table.reload('personList',{});
+                        });
+                    }else{
+                        // 	   配置一个透明的询问框
+                        layer.msg(json.msg,{
+                            time:20000,
+                            btn:['明白了']
+                        });
+                    }
+                }
+            });
+
+        });
+
+    });
+</script>

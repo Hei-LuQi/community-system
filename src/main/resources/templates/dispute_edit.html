@@ -1,0 +1,101 @@
+<div class="layuimini-main">
+    <div class="layui-form layuimini-form"  lay-filter="dispute_edit">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" readonly="readonly" style="background:#CCCCCC" class="layui-input" lay-reqtext="编号不能为空" placeholder="请输入编号">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">涉事人</label>
+            <div class="layui-input-block">
+                <input type="text" name="involvedPerson"  lay-verify="required" class="layui-input" lay-reqtext="涉事人不能为空" placeholder="请输入涉事人">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">纠纷原因</label>
+            <div class="layui-input-block">
+                <input type="text" name="reason" lay-verify="required" lay-reqtext="纠纷原因不能为空" placeholder="请输入纠纷原因" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">处理结果</label>
+            <div class="layui-input-block">
+                <input type="text" name="result" lay-verify="required" lay-reqtext="处理结果不能为空" placeholder="请输入处理结果" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">联系方式</label>
+            <div class="layui-input-block">
+                <input type="text" name="contact" lay-verify="required" lay-reqtext="联系方式不能为空" placeholder="请输入联系方式" value="" class="layui-input">
+            </div>
+        </div>
+
+        <!--        <div class="layui-form-item">-->
+        <!--            <label class="layui-form-label required">联系电话</label>-->
+        <!--            <div class="layui-input-block">-->
+        <!--                <input type="radio" name="status" value="2" title="可借" checked="">-->
+        <!--                <input type="radio" name="status" value="1" title="不可借">-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script th:inline="none">
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            ajax({
+                method: 'POST',
+                url: '/updateDispute',
+                data:data.field,
+                success: function (response) {
+                    var json=JSON.parse(response);
+                    if(json.code==0){
+                        var index = layer.alert(json.msg, {
+                            title: '提交完毕'
+                        }, function () {
+                            // 关闭弹出层
+                            layer.close(index);
+                            layer.close(parentIndex);
+                            table.reload('disputeList',{});
+                        });
+                    }else{
+                        // 	   配置一个透明的询问框
+                        layer.msg(json.msg,{
+                            time:20000,
+                            btn:['明白了']
+                        });
+                    }
+                }
+            });
+
+        });
+
+    });
+</script>
